@@ -7,7 +7,7 @@ const HomeScreen = ({ navigation }) => {
         <Text>This is the Gig List Screen</Text>
         <Button
           title="Go to Gig Details"
-          onPress={() => navigation.navigate('CitySearchScreen')}
+          onPress={() => navigation.navigate('ArtistSearchScreen')}
         />
       </View>
     );
