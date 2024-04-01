@@ -27,7 +27,7 @@ const MyGigsScreen = () => {
       <Text style={styles.header}>My Attending Gigs</Text>
       <FlatList
         data={attendingGigs}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => `${item.id}-${index}`} // Assuming each gig has a unique id
         renderItem={({ item }) => (
           <View style={styles.gigItem}>
             <Text>{item.name}</Text>
@@ -53,6 +53,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
+    color: '#000',
   },
 });
 

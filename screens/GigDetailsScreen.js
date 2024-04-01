@@ -3,6 +3,10 @@ import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ScrollView }
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 
+// In GigDetailsScreen.js
+navigation.navigate('MyGigsScreen', { attendingGigs: attendingGigs });
+
+
 const GigDetailsScreen = ({ route }) => {
   const { artistName } = route.params;
   const [gigs, setGigs] = useState([]);

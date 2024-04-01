@@ -1,9 +1,11 @@
-// HeaderButton.js
-
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
-const HeaderButton = ({ title, onPress }) => {
+const HeaderButton = ({ title, navigation, destination }) => {
+  const onPress = () => {
+    navigation.navigate(destination);
+  };
+
   return (
     <TouchableOpacity style={styles.button} onPress={onPress}>
       <Text style={styles.buttonText}>{title}</Text>
@@ -18,7 +20,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#fff',
+    color: '#000',
   },
 });
 
