@@ -3,8 +3,10 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native'; // Import useNavigation hook
 
 const MyGigsScreen = () => {
+  const navigation = useNavigation(); // Get navigation object using useNavigation hook
   const [attendingGigs, setAttendingGigs] = useState([]);
 
   useEffect(() => {
@@ -27,7 +29,7 @@ const MyGigsScreen = () => {
       <Text style={styles.header}>My Attending Gigs</Text>
       <FlatList
         data={attendingGigs}
-        keyExtractor={(item, index) => `${item.id}-${index}`} // Assuming each gig has a unique id
+        keyExtractor={(item, index) => `${item.id}-${index}`}
         renderItem={({ item }) => (
           <View style={styles.gigItem}>
             <Text>{item.name}</Text>
@@ -53,7 +55,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    color: '#000',
   },
 });
 
