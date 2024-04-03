@@ -1,40 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, Image, TouchableOpacity, StyleSheet, ScrollView } from 'react-native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// In GigDetailsScreen.js
-navigation.navigate('MyGigsScreen', { attendingGigs: attendingGigs });
-
-
-const GigDetailsScreen = ({ route }) => {
+const GigDetailsScreen = ({ route, navigation }) => {
   const { artistName } = route.params;
   const [gigs, setGigs] = useState([]);
-  const [attendingGigs, setAttendingGigs] = useState(new Set()); // Define attendingGigs state
+  const [attendingGigs, setAttendingGigs] = useState(new Set());
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Save attendance to AsyncStorage when attendingGigs changes
     const saveAttendance = async () => {
       try {
-        // Convert the Set to an Array for serialization
         await AsyncStorage.setItem('attendingGigs', JSON.stringify(Array.from(attendingGigs)));
       } catch (e) {
-        // Logging the error if saving fails
         console.error("Failed to save attendance:", e);
       }
     };
 
     saveAttendance();
-  }, [attendingGigs]); // This useEffect depends on `attendingGigs`
+  }, [attendingGigs]);
 
   useEffect(() => {
-    // Load attendance from AsyncStorage on component mount
     const loadAttendance = async () => {
       try {
         const savedAttendingGigs = await AsyncStorage.getItem('attendingGigs');
         if (savedAttendingGigs !== null) {
-          // Convert the stored string back into a Set
           setAttendingGigs(new Set(JSON.parse(savedAttendingGigs)));
         }
       } catch (e) {
@@ -43,7 +34,7 @@ const GigDetailsScreen = ({ route }) => {
     };
 
     loadAttendance();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
   useEffect(() => {
     const fetchGigs = async () => {
@@ -68,7 +59,6 @@ const GigDetailsScreen = ({ route }) => {
     fetchGigs();
   }, [artistName]);
 
-  // Toggle attending status for a gig
   const toggleAttending = (gigId) => {
     setAttendingGigs(prev => {
       const newAttending = new Set(prev);
@@ -157,7 +147,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  // Additional styles as needed
 });
 
 export default GigDetailsScreen;

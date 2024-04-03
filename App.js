@@ -8,26 +8,20 @@ import GigListScreen from './screens/GigListScreen';
 import GigDetailsScreen from './screens/GigDetailsScreen';
 import MyGigsScreen from './screens/MyGigsScreen';
 import PlaylistScreen from './screens/PlaylistCreationScreen';
-import HeaderButton from './Components/HeaderButton';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="HomeScreen"
-        screenOptions={({ navigation }) => ({
-          headerRight: () => <HeaderButton title="My Gigs" navigation={navigation} destination="MyGigsScreen" />,
-        })}
-      >
-        <Stack.Screen name="HomeScreen" component={HomeScreen} options={{ title: 'Home' }} />
-        <Stack.Screen name="CitySearchScreen" component={CitySearchScreen} options={{ title: 'City Search' }} />
-        <Stack.Screen name="ArtistSearchScreen" component={ArtistSearchScreen} options={{ title: 'Artist Search' }} />
-        <Stack.Screen name="GigListScreen" component={GigListScreen} options={{ title: 'Gig List' }} />
-        <Stack.Screen name="GigDetailsScreen" component={GigDetailsScreen} options={{ title: 'Gig Details' }} />
-        <Stack.Screen name="MyGigsScreen" component={MyGigsScreen} options={{ title: 'My Gigs' }} />
-        <Stack.Screen name="PlaylistScreen" component={PlaylistScreen} options={{ title: 'Playlists' }} />
+      <Stack.Navigator>
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="CitySearch" component={CitySearchScreen} />
+        <Stack.Screen name="ArtistSearch" component={ArtistSearchScreen} />
+        <Stack.Screen name="GigList" component={GigListScreen} />
+        <Stack.Screen name="GigDetails" component={GigDetailsScreen} />
+        <Stack.Screen name="MyGigs" component={MyGigsScreen} />
+        <Stack.Screen name="Playlist" component={PlaylistScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
