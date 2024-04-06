@@ -6,30 +6,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const GigDetailsScreen = ({ route, navigation }) => {
   const { artistName } = route.params;
   const [gigs, setGigs] = useState([]);
-  const [attendingGigs, setAttendingGigs] = useState(new Set());
+  const [attendingGigs, setAttendingGigs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const saveAttendance = async () => {
-      try {
-        await AsyncStorage.setItem('attendingGigs', JSON.stringify(Array.from(attendingGigs)));
-      } catch (e) {
-        console.error("Failed to save attendance:", e);
-      }
-    };
-
-    saveAttendance();
-  }, [attendingGigs]);
 
   useEffect(() => {
     const loadAttendance = async () => {
       try {
         const savedAttendingGigs = await AsyncStorage.getItem('attendingGigs');
-        if (savedAttendingGigs !== null) {
-          setAttendingGigs(new Set(JSON.parse(savedAttendingGigs)));
-        }
+        setAttendingGigs(savedAttendingGigs ? JSON.parse(savedAttendingGigs) : []);
       } catch (e) {
-        console.error("Failed to load attendance:", e);
+        console.error("Failed to load attending gigs:", e);
       }
     };
 
@@ -42,11 +28,11 @@ const GigDetailsScreen = ({ route, navigation }) => {
       try {
         const response = await axios.get(`https://app.ticketmaster.com/discovery/v2/events.json`, {
           params: {
-            apikey: 'LZqHgCDf5jG2KZnMI0jzijcTra4fxedW',
+            apikey: 'LZqHgCDf5jG2KZnMI0jzijcTra4fxedW', // Use your Ticketmaster API key
             keyword: artistName,
             classificationName: 'music',
             countryCode: 'GB',
-          }
+          },
         });
         setGigs(response.data._embedded?.events || []);
       } catch (error) {
@@ -59,22 +45,31 @@ const GigDetailsScreen = ({ route, navigation }) => {
     fetchGigs();
   }, [artistName]);
 
-  const toggleAttending = (gigId) => {
-    setAttendingGigs(prev => {
-      const newAttending = new Set(prev);
-      if (newAttending.has(gigId)) {
-        newAttending.delete(gigId);
-      } else {
-        newAttending.add(gigId);
-      }
-      return newAttending;
-    });
+  const toggleAttending = async (selectedGig) => {
+    const isAlreadyAttending = attendingGigs.some(gig => gig.id === selectedGig.id);
+    const updatedAttendingGigs = isAlreadyAttending ? attendingGigs.filter(gig => gig.id !== selectedGig.id) : [...attendingGigs, {
+      id: selectedGig.id,
+      name: selectedGig.name,
+      image: selectedGig.images[0].url,
+      venue: selectedGig._embedded.venues[0].name,
+      date: selectedGig.dates.start.localDate,
+      bands: selectedGig._embedded?.attractions?.map(attraction => attraction.name) || [],
+    }];
+
+    try {
+      await AsyncStorage.setItem('attendingGigs', JSON.stringify(updatedAttendingGigs));
+      setAttendingGigs(updatedAttendingGigs);
+    } catch (e) {
+      console.error("Error saving attending gigs:", e);
+    }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>{artistName}'s Upcoming Gigs</Text>
-      {isLoading ? <Text>Loading...</Text> : (
+      {isLoading ? (
+        <Text>Loading...</Text>
+      ) : (
         <FlatList
           data={gigs}
           keyExtractor={item => item.id}
@@ -87,11 +82,11 @@ const GigDetailsScreen = ({ route, navigation }) => {
                   <Text key={index} style={styles.bandName}>{band.name}</Text>
                 ))}
               </ScrollView>
-              <Text>Venue: {item._embedded?.venues[0].name}</Text>
-              <Text>Date: {item.dates.start.localDate}</Text>
-              <TouchableOpacity onPress={() => toggleAttending(item.id)} style={styles.attendButton}>
+              <Text style={styles.details}>Venue: {item._embedded?.venues[0].name}</Text>
+              <Text style={styles.details}>Date: {item.dates.start.localDate}</Text>
+              <TouchableOpacity onPress={() => toggleAttending(item)} style={styles.attendButton}>
                 <Text style={styles.attendButtonText}>
-                  {attendingGigs.has(item.id) ? '✓ Attending' : '☆ Mark as Attending'}
+                  {attendingGigs.some(gig => gig.id === item.id) ? '✓ Attending' : '☆ Mark as Attending'}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -106,18 +101,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginTop: 20,
-    paddingHorizontal: 10,
   },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
     marginBottom: 20,
   },
   gigDetails: {
     marginBottom: 20,
-    paddingBottom: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    padding: 10,
   },
   eventImage: {
     width: '100%',
@@ -128,17 +121,21 @@ const styles = StyleSheet.create({
   gigName: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
+  },
+  details: {
+    fontSize: 16,
+    marginBottom: 5,
   },
   bandName: {
-    backgroundColor: "#ddd",
-    padding: 5,
     marginRight: 10,
+    backgroundColor: '#ddd',
+    padding: 5,
     borderRadius: 5,
   },
   attendButton: {
     marginTop: 10,
-    backgroundColor: "#4CAF50",
+    backgroundColor: '#4CAF50',
     padding: 10,
     borderRadius: 5,
   },

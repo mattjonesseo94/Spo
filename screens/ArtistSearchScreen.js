@@ -3,7 +3,6 @@ import { View, TextInput, FlatList, Text, Image, TouchableOpacity, StyleSheet } 
 import axios from 'axios';
 import debounce from 'lodash.debounce';
 
-// Assuming navigation is set up correctly, `navigation` prop is available
 const ArtistEventsPage = ({ navigation }) => {
   const [query, setQuery] = useState('');
   const [events, setEvents] = useState([]);
@@ -24,7 +23,6 @@ const ArtistEventsPage = ({ navigation }) => {
         if (artist && artist.name.toLowerCase().includes(searchQuery.toLowerCase()) && !artistNames.has(artist.name)) {
           artistNames.add(artist.name);
           const imageUrl = event.images?.[0]?.url;
-          // Add `artistName` to the object for navigation purposes
           filteredEvents.push({ ...event, imageUrl, artistName: artist.name });
         }
       });
@@ -41,6 +39,10 @@ const ArtistEventsPage = ({ navigation }) => {
     return () => fetchEvents.cancel();
   }, [query]);
 
+  const navigateToGigDetails = (artistName) => {
+    navigation.navigate('GigDetailsScreen', { artistName });
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <TextInput
@@ -53,7 +55,7 @@ const ArtistEventsPage = ({ navigation }) => {
         data={events}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
-          <TouchableOpacity style={styles.itemContainer} onPress={() => navigation.navigate('GigDetailsScreen', { artistName: item.artistName })}>
+          <TouchableOpacity style={styles.itemContainer} onPress={() => navigateToGigDetails(item.artistName)}>
             {item.imageUrl && (
               <Image source={{ uri: item.imageUrl }} style={styles.artistImage} />
             )}
